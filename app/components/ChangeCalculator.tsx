@@ -179,11 +179,14 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
       return;
     }
 
+    const numericAmount = parseFloat(amountOnTill);
+    const change = moneyHandedByCustomer - numericAmount;
+
     // Create new transaction with breakdown
     const transaction = {
-      amountOnTill: parseFloat(amountOnTill),
+      amountOnTill: numericAmount,
       moneyHandedByCustomer,
-      changeDue,
+      changeDue: change,
       breakdown: changeBreakdown,
       timestamp: new Date().toISOString()
     };
@@ -200,9 +203,9 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
 
     // Call the onComplete callback
     onComplete({
-      amountOnTill: parseFloat(amountOnTill),
+      amountOnTill: numericAmount,
       moneyHandedByCustomer,
-      changeDue
+      changeDue: change
     });
     
     // Reset calculator
