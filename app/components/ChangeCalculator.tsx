@@ -182,7 +182,7 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
   return (
     <div className="p-4 bg-[#F9F9F2] rounded-lg shadow-lg max-w-2xl mx-auto">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold text-center font-heiti">Change Calculator</h2>
+        <h2 className="text-3xl font-bold text-center font-heiti">Change Calculator</h2>
         <div className="flex gap-2">
           <button
             onClick={() => setShowHistory(!showHistory)}
@@ -247,27 +247,27 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
         </div>
       )}
 
-      <div className="space-y-4">
-        <div className="flex justify-between items-center bg-white p-4 rounded-lg shadow-md">
-          <span className="text-xl font-bold">Amount shown on till:</span>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center bg-white p-6 rounded-xl shadow-lg">
+          <span className="text-2xl font-bold">Amount shown on till:</span>
           <input
             type="number"
             value={amountOnTill}
             onChange={handleAmountChange}
-            className="border rounded-lg p-3 w-40 text-right text-2xl font-bold"
+            className="border-2 border-gray-300 rounded-xl p-4 w-48 text-right text-3xl font-bold focus:border-[#7CB8B1] focus:ring-2 focus:ring-[#7CB8B1] focus:outline-none"
             step="0.01"
             min="0"
           />
         </div>
 
-        <div className="flex justify-between items-center bg-white p-4 rounded-lg shadow-md">
-          <span className="text-xl font-bold">Money handed by customer:</span>
-          <span className="text-2xl font-bold">£{moneyHandedByCustomer.toFixed(2)}</span>
+        <div className="flex justify-between items-center bg-white p-6 rounded-xl shadow-lg">
+          <span className="text-2xl font-bold">Money handed by customer:</span>
+          <span className="text-3xl font-bold text-[#4C9B8F]">£{moneyHandedByCustomer.toFixed(2)}</span>
         </div>
 
-        <div className="flex justify-between items-center bg-white p-4 rounded-lg shadow-md">
-          <span className="text-xl font-bold">Change due:</span>
-          <span className={`text-2xl font-bold ${changeDue < 0 ? 'text-red-500' : 'text-green-500'}`}>
+        <div className="flex justify-between items-center bg-white p-6 rounded-xl shadow-lg">
+          <span className="text-2xl font-bold">Change due:</span>
+          <span className={`text-3xl font-bold ${changeDue < 0 ? 'text-red-500' : 'text-[#4C9B8F]'}`}>
             £{changeDue.toFixed(2)}
           </span>
         </div>
