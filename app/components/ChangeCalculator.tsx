@@ -124,6 +124,13 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    
+    // Only allow numbers and one decimal point
+    if (!/^\d*\.?\d*$/.test(value) && value !== '') return;
+    
+    // Prevent more than 2 decimal places
+    if (value.includes('.') && value.split('.')[1]?.length > 2) return;
+    
     setAmountOnTill(value);
 
     const numericValue = parseFloat(value);
@@ -288,21 +295,31 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
         <div className="flex justify-between items-center bg-white p-6 rounded-xl shadow-lg">
           <span className="text-2xl font-bold">Amount shown on till:</span>
           <div className="flex items-center gap-3">
-            <input
-              type="number"
-              value={amountOnTill}
-              onChange={handleAmountChange}
-              className="border-2 border-gray-300 rounded-xl p-4 w-48 text-right text-3xl font-bold focus:border-[#7CB8B1] focus:ring-2 focus:ring-[#7CB8B1] focus:outline-none"
-              step="0.01"
-              min="0"
-            />
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-3xl font-bold text-gray-500">£</span>
+              <input
+                type="text"
+                inputMode="decimal"
+                pattern="[0-9]*\.?[0-9]*"
+                value={amountOnTill}
+                onChange={handleAmountChange}
+                placeholder="0.00"
+                className="border-2 border-gray-300 rounded-xl p-4 pl-10 w-56 text-right text-3xl font-bold focus:border-[#7CB8B1] focus:ring-2 focus:ring-[#7CB8B1] focus:outline-none"
+              />
+            </div>
             <button
               onClick={() => setShowNumpad(!showNumpad)}
-              className="p-2 bg-[#7CB8B1] text-white rounded-lg hover:bg-opacity-90"
+              className="p-4 bg-[#7CB8B1] text-white rounded-lg hover:bg-opacity-90 transition-all duration-200"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
+              {showNumpad ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+              )}
             </button>
           </div>
         </div>
