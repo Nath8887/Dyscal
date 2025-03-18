@@ -6,18 +6,18 @@ import Image from 'next/image';
 import { Currency, MoneyCounterState } from '../types/types';
 
 const CURRENCY_DATA: Currency[] = [
-  { value: 50, type: 'note', label: '£50', count: 0, imagePath: 'https://i.imgur.com/YqhWHYL.jpg' },
-  { value: 20, type: 'note', label: '£20', count: 0, imagePath: 'https://i.imgur.com/QWVXkb5.jpg' },
-  { value: 10, type: 'note', label: '£10', count: 0, imagePath: 'https://i.imgur.com/8JHxcqL.jpg' },
-  { value: 5, type: 'note', label: '£5', count: 0, imagePath: 'https://i.imgur.com/2DTWxkN.jpg' },
-  { value: 2, type: 'coin', label: '£2', count: 0, imagePath: 'https://i.imgur.com/L5Wpxk7.png' },
-  { value: 1, type: 'coin', label: '£1', count: 0, imagePath: 'https://i.imgur.com/Y5Kxrj3.png' },
-  { value: 0.5, type: 'coin', label: '50p', count: 0, imagePath: 'https://i.imgur.com/JnVc6CQ.png' },
-  { value: 0.2, type: 'coin', label: '20p', count: 0, imagePath: 'https://i.imgur.com/xK7Ql2P.png' },
-  { value: 0.1, type: 'coin', label: '10p', count: 0, imagePath: 'https://i.imgur.com/2X7MYf9.png' },
-  { value: 0.05, type: 'coin', label: '5p', count: 0, imagePath: 'https://i.imgur.com/QWqQWZ3.png' },
-  { value: 0.02, type: 'coin', label: '2p', count: 0, imagePath: 'https://i.imgur.com/8YfXLRL.png' },
-  { value: 0.01, type: 'coin', label: '1p', count: 0, imagePath: 'https://i.imgur.com/ZZkYxkE.png' },
+  { value: 50, type: 'note', label: '£50', count: 0, imagePath: '/images/currency/50' },
+  { value: 20, type: 'note', label: '£20', count: 0, imagePath: '/images/currency/20' },
+  { value: 10, type: 'note', label: '£10', count: 0, imagePath: '/images/currency/10' },
+  { value: 5, type: 'note', label: '£5', count: 0, imagePath: '/images/currency/5' },
+  { value: 2, type: 'coin', label: '£2', count: 0, imagePath: '/images/currency/2' },
+  { value: 1, type: 'coin', label: '£1', count: 0, imagePath: '/images/currency/1' },
+  { value: 0.5, type: 'coin', label: '50p', count: 0, imagePath: '/images/currency/50p' },
+  { value: 0.2, type: 'coin', label: '20p', count: 0, imagePath: '/images/currency/20p' },
+  { value: 0.1, type: 'coin', label: '10p', count: 0, imagePath: '/images/currency/10p' },
+  { value: 0.05, type: 'coin', label: '5p', count: 0, imagePath: '/images/currency/5p' },
+  { value: 0.02, type: 'coin', label: '2p', count: 0, imagePath: '/images/currency/2p' },
+  { value: 0.01, type: 'coin', label: '1p', count: 0, imagePath: '/images/currency/1p' }
 ];
 
 export default function MoneyCounter({ onComplete }: { onComplete: (total: number) => void }) {
@@ -106,14 +106,26 @@ export default function MoneyCounter({ onComplete }: { onComplete: (total: numbe
                 }}
               >
                 <div className="relative w-full aspect-[2/1] mb-2">
-                  <Image
-                    src={currency.imagePath}
-                    alt={currency.label}
-                    fill
-                    className="object-contain rounded"
-                    sizes="(max-width: 640px) 150px, 200px"
-                    priority
-                  />
+                  <picture>
+                    <source
+                      srcSet={`${currency.imagePath}-sm.webp 100w, ${currency.imagePath}-md.webp 150w, ${currency.imagePath}.webp 200w`}
+                      sizes="(max-width: 640px) 100px, (max-width: 768px) 150px, 200px"
+                      type="image/webp"
+                    />
+                    <source
+                      srcSet={`${currency.imagePath}-sm.png 100w, ${currency.imagePath}-md.png 150w, ${currency.imagePath}.png 200w`}
+                      sizes="(max-width: 640px) 100px, (max-width: 768px) 150px, 200px"
+                      type="image/png"
+                    />
+                    <Image
+                      src={`${currency.imagePath}.png`}
+                      alt={currency.label}
+                      fill
+                      className="object-contain rounded"
+                      sizes="(max-width: 640px) 100px, (max-width: 768px) 150px, 200px"
+                      priority
+                    />
+                  </picture>
                 </div>
                 <span className="block text-lg font-bold">{currency.label}</span>
                 {currency.count > 0 && (
@@ -144,14 +156,26 @@ export default function MoneyCounter({ onComplete }: { onComplete: (total: numbe
                 }}
               >
                 <div className="relative w-full aspect-square mb-2">
-                  <Image
-                    src={currency.imagePath}
-                    alt={currency.label}
-                    fill
-                    className="object-contain rounded-full"
-                    sizes="(max-width: 640px) 80px, 100px"
-                    priority
-                  />
+                  <picture>
+                    <source
+                      srcSet={`${currency.imagePath}-sm.webp 100w, ${currency.imagePath}-md.webp 150w, ${currency.imagePath}.webp 200w`}
+                      sizes="(max-width: 640px) 80px, (max-width: 768px) 100px, 150px"
+                      type="image/webp"
+                    />
+                    <source
+                      srcSet={`${currency.imagePath}-sm.png 100w, ${currency.imagePath}-md.png 150w, ${currency.imagePath}.png 200w`}
+                      sizes="(max-width: 640px) 80px, (max-width: 768px) 100px, 150px"
+                      type="image/png"
+                    />
+                    <Image
+                      src={`${currency.imagePath}.png`}
+                      alt={currency.label}
+                      fill
+                      className="object-contain rounded-full"
+                      sizes="(max-width: 640px) 80px, (max-width: 768px) 100px, 150px"
+                      priority
+                    />
+                  </picture>
                 </div>
                 <span className="block text-lg font-bold">{currency.label}</span>
                 {currency.count > 0 && (

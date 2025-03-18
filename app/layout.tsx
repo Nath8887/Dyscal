@@ -1,10 +1,26 @@
 import type { Metadata } from "next";
-import { Toaster } from "react-hot-toast";
+import { Inter } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "react-hot-toast";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "DysCal - Finding Solutions",
-  description: "A calculator app designed to assist users with dyscalculia and dyslexia in calculating change.",
+  title: "Dyscal - Money Counter",
+  description: "A money counter and change calculator app",
+  manifest: "/manifest.json",
+  themeColor: "#7CB8B1",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Dyscal",
+  },
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+  },
 };
 
 export default function RootLayout({
@@ -15,10 +31,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Heiti+TC:wght@400;700&display=swap"
-          rel="stylesheet"
-        />
+        <link rel="apple-touch-icon" href="/icon-192.png" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
       <body 
         className="min-h-screen bg-[#F9F9F2]"
