@@ -89,7 +89,7 @@ export default function Preferences({ onClose }: PreferencesProps) {
       <div className="space-y-6">
         <div>
           <h3 className="text-lg font-bold mb-3">Available Currency</h3>
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             {CURRENCY_DATA.map((currency) => {
               const isDisabled = preferences.disabledCurrency.some(
                 (c) => c.label === currency.label
@@ -98,16 +98,18 @@ export default function Preferences({ onClose }: PreferencesProps) {
                 <button
                   key={currency.label}
                   onClick={() => toggleCurrency(currency)}
-                  className={`p-3 rounded-lg transition-colors ${
+                  className={`p-6 rounded-lg transition-all transform hover:scale-105 active:scale-95 shadow-md ${
                     isDisabled
-                      ? 'bg-gray-300'
+                      ? 'bg-gray-300 hover:bg-gray-200'
                       : currency.type === 'note'
-                      ? 'bg-green-100'
-                      : 'bg-gray-100'
+                      ? 'bg-green-100 hover:bg-green-200'
+                      : 'bg-blue-100 hover:bg-blue-200'
                   }`}
                 >
-                  <div className="text-lg font-bold">{currency.label}</div>
-                  <div className="text-sm">{isDisabled ? 'Disabled' : 'Available'}</div>
+                  <div className="text-2xl font-bold mb-2">{currency.label}</div>
+                  <div className="text-lg font-medium">
+                    {isDisabled ? 'Disabled' : 'Available'}
+                  </div>
                 </button>
               );
             })}
@@ -119,9 +121,9 @@ export default function Preferences({ onClose }: PreferencesProps) {
             <h3 className="text-lg font-bold">Past Interactions</h3>
             <button
               onClick={clearCache}
-              className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
+              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 text-base shadow-md transition-colors"
             >
-              Clear Cache
+              Clear History
             </button>
           </div>
           
