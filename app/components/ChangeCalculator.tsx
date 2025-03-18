@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { Currency } from '../types/types';
+import { Currency, Preferences } from '../types/types';
 import { toast } from 'react-hot-toast';
 
 interface ChangeCalculatorProps {
@@ -12,33 +12,45 @@ interface ChangeCalculatorProps {
 }
 
 const CURRENCY_DATA: Currency[] = [
-  { value: 50, type: 'note', label: '£50', count: 0, imagePath: '/images/currency/50' },
-  { value: 20, type: 'note', label: '£20', count: 0, imagePath: '/images/currency/20' },
-  { value: 10, type: 'note', label: '£10', count: 0, imagePath: '/images/currency/10' },
-  { value: 5, type: 'note', label: '£5', count: 0, imagePath: '/images/currency/5' },
-  { value: 2, type: 'coin', label: '£2', count: 0, imagePath: '/images/currency/2' },
-  { value: 1, type: 'coin', label: '£1', count: 0, imagePath: '/images/currency/1' },
-  { value: 0.5, type: 'coin', label: '50p', count: 0, imagePath: '/images/currency/50p' },
-  { value: 0.2, type: 'coin', label: '20p', count: 0, imagePath: '/images/currency/20p' },
-  { value: 0.1, type: 'coin', label: '10p', count: 0, imagePath: '/images/currency/10p' },
-  { value: 0.05, type: 'coin', label: '5p', count: 0, imagePath: '/images/currency/5p' },
-  { value: 0.02, type: 'coin', label: '2p', count: 0, imagePath: '/images/currency/2p' },
-  { value: 0.01, type: 'coin', label: '1p', count: 0, imagePath: '/images/currency/1p' }
+  { value: 10, type: 'note', label: '£10', count: 0, imagePath: '/images/currency/10.png' },
+  { value: 5, type: 'note', label: '£5', count: 0, imagePath: '/images/currency/5.png' },
+  { value: 2, type: 'coin', label: '£2', count: 0, imagePath: '/images/currency/2.png' },
+  { value: 1, type: 'coin', label: '£1', count: 0, imagePath: '/images/currency/1.png' },
+  { value: 0.5, type: 'coin', label: '50p', count: 0, imagePath: '/images/currency/50p.png' },
+  { value: 0.2, type: 'coin', label: '20p', count: 0, imagePath: '/images/currency/20p.png' },
+  { value: 0.1, type: 'coin', label: '10p', count: 0, imagePath: '/images/currency/10p.png' },
+  { value: 0.05, type: 'coin', label: '5p', count: 0, imagePath: '/images/currency/5p.png' },
+  { value: 0.02, type: 'coin', label: '2p', count: 0, imagePath: '/images/currency/2p.png' },
+  { value: 0.01, type: 'coin', label: '1p', count: 0, imagePath: '/images/currency/1p.png' }
 ];
 
 export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: ChangeCalculatorProps) {
   const [amountOnTill, setAmountOnTill] = useState<string>('');
   const [changeDue, setChangeDue] = useState<number>(0);
   const [changeBreakdown, setChangeBreakdown] = useState<Currency[]>([]);
+  const [preferences, setPreferences] = useState<Preferences>({
+    disabledCurrency: [],
+    pastInteractions: []
+  });
+
+  useEffect(() => {
+    // Load preferences from localStorage
+    const savedPreferences = localStorage.getItem('dyscalc-preferences');
+    if (savedPreferences) {
+      setPreferences(JSON.parse(savedPreferences));
+    }
+  }, []);
 
   const calculateChange = (amount: number) => {
     let remaining = amount;
     const breakdown: Currency[] = [];
     
-    // Sort currency by value (highest to lowest)
-    const sortedCurrency = [...CURRENCY_DATA].sort((a, b) => b.value - a.value);
+    // Filter out disabled currencies and sort by value (highest to lowest)
+    const availableCurrency = CURRENCY_DATA
+      .filter(currency => !preferences.disabledCurrency.some(disabled => disabled.label === currency.label))
+      .sort((a, b) => b.value - a.value);
     
-    for (const currency of sortedCurrency) {
+    for (const currency of availableCurrency) {
       if (remaining >= currency.value) {
         const count = Math.floor(remaining / currency.value);
         remaining = Number((remaining % currency.value).toFixed(2));
@@ -46,6 +58,11 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
           breakdown.push({ ...currency, count });
         }
       }
+    }
+    
+    // If we still have remaining amount and no smaller denominations available
+    if (remaining > 0 && breakdown.length === 0) {
+      toast.error('Unable to make exact change with available currency');
     }
     
     return breakdown;
@@ -136,17 +153,17 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
                         <div className="relative w-full aspect-[2/1] mb-2">
                           <picture>
                             <source
-                              srcSet={`${currency.imagePath}-sm.webp 100w, ${currency.imagePath}-md.webp 150w, ${currency.imagePath}.webp 200w`}
+                              srcSet={`${currency.imagePath.replace('.png', '')}-sm.webp 100w, ${currency.imagePath.replace('.png', '')}-md.webp 150w, ${currency.imagePath.replace('.png', '')}.webp 200w`}
                               sizes="(max-width: 640px) 100px, (max-width: 768px) 150px, 200px"
                               type="image/webp"
                             />
                             <source
-                              srcSet={`${currency.imagePath}-sm.png 100w, ${currency.imagePath}-md.png 150w, ${currency.imagePath}.png 200w`}
+                              srcSet={`${currency.imagePath.replace('.png', '')}-sm.png 100w, ${currency.imagePath.replace('.png', '')}-md.png 150w, ${currency.imagePath.replace('.png', '')}.png 200w`}
                               sizes="(max-width: 640px) 100px, (max-width: 768px) 150px, 200px"
                               type="image/png"
                             />
                             <Image
-                              src={`${currency.imagePath}.png`}
+                              src={currency.imagePath}
                               alt={currency.label}
                               fill
                               className="object-contain rounded"
@@ -181,17 +198,17 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
                         <div className="relative w-full aspect-square mb-2">
                           <picture>
                             <source
-                              srcSet={`${currency.imagePath}-sm.webp 100w, ${currency.imagePath}-md.webp 150w, ${currency.imagePath}.webp 200w`}
+                              srcSet={`${currency.imagePath.replace('.png', '')}-sm.webp 100w, ${currency.imagePath.replace('.png', '')}-md.webp 150w, ${currency.imagePath.replace('.png', '')}.webp 200w`}
                               sizes="(max-width: 640px) 80px, (max-width: 768px) 100px, 150px"
                               type="image/webp"
                             />
                             <source
-                              srcSet={`${currency.imagePath}-sm.png 100w, ${currency.imagePath}-md.png 150w, ${currency.imagePath}.png 200w`}
+                              srcSet={`${currency.imagePath.replace('.png', '')}-sm.png 100w, ${currency.imagePath.replace('.png', '')}-md.png 150w, ${currency.imagePath.replace('.png', '')}.png 200w`}
                               sizes="(max-width: 640px) 80px, (max-width: 768px) 100px, 150px"
                               type="image/png"
                             />
                             <Image
-                              src={`${currency.imagePath}.png`}
+                              src={currency.imagePath}
                               alt={currency.label}
                               fill
                               className="object-contain rounded-full"

@@ -3,6 +3,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { Currency, Preferences as PreferencesType } from '../types/types';
+import { toast } from 'react-hot-toast';
 
 const CURRENCY_DATA: Currency[] = [
   { value: 10, type: "note", label: "£10", count: 0, imagePath: "/images/currency/10.png" },
@@ -43,17 +44,27 @@ export default function Preferences({ onClose }: PreferencesProps) {
   const toggleCurrency = (currency: Currency) => {
     const isDisabled = preferences.disabledCurrency.some((c) => c.label === currency.label);
     
+    let newDisabledCurrency;
     if (isDisabled) {
-      setPreferences({
-        ...preferences,
-        disabledCurrency: preferences.disabledCurrency.filter((c) => c.label !== currency.label),
-      });
+      // Enable the currency by removing it from disabled list
+      newDisabledCurrency = preferences.disabledCurrency.filter((c) => c.label !== currency.label);
     } else {
-      setPreferences({
-        ...preferences,
-        disabledCurrency: [...preferences.disabledCurrency, currency],
-      });
+      // Disable the currency by adding it to disabled list
+      newDisabledCurrency = [...preferences.disabledCurrency, currency];
     }
+
+    // Update preferences
+    const newPreferences = {
+      ...preferences,
+      disabledCurrency: newDisabledCurrency,
+    };
+
+    // Save to state and localStorage
+    setPreferences(newPreferences);
+    localStorage.setItem('dyscalc-preferences', JSON.stringify(newPreferences));
+
+    // Show confirmation toast
+    toast.success(`${currency.label} ${isDisabled ? 'enabled' : 'disabled'}`);
   };
 
   const clearCache = () => {
