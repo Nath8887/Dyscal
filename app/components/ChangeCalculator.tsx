@@ -24,6 +24,36 @@ const CURRENCY_DATA: Currency[] = [
   { value: 0.01, type: 'coin', label: '1p', count: 0, imagePath: '/images/currency/1p.png' }
 ];
 
+// Get currency-specific colors
+const getCurrencyColor = (currency: Currency) => {
+  switch (currency.label) {
+    // Notes
+    case '£10':
+      return 'bg-orange-100';  // Brown/orange for £10
+    case '£5':
+      return 'bg-teal-100';    // Turquoise/teal for £5
+    // Coins
+    case '£2':
+      return 'bg-zinc-100';    // Silver/gold for £2
+    case '£1':
+      return 'bg-yellow-100';  // Gold for £1
+    case '50p':
+      return 'bg-slate-100';   // Silver for 50p
+    case '20p':
+      return 'bg-slate-100';   // Silver for 20p
+    case '10p':
+      return 'bg-amber-100';   // Bronze for 10p
+    case '5p':
+      return 'bg-slate-100';   // Silver for 5p
+    case '2p':
+      return 'bg-amber-100';   // Bronze for 2p
+    case '1p':
+      return 'bg-amber-100';   // Bronze for 1p
+    default:
+      return 'bg-gray-100';
+  }
+};
+
 export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: ChangeCalculatorProps) {
   const [amountOnTill, setAmountOnTill] = useState<string>('');
   const [changeDue, setChangeDue] = useState<number>(0);
@@ -177,7 +207,7 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
-                        className="p-2 rounded-lg bg-green-100 flex flex-col items-center"
+                        className={`p-2 rounded-lg ${getCurrencyColor(currency)} flex flex-col items-center`}
                       >
                         <div className="relative w-full aspect-[2/1] mb-2">
                           <picture>
@@ -222,7 +252,7 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
-                        className="p-2 rounded-lg bg-gray-100 flex flex-col items-center"
+                        className={`p-2 rounded-lg ${getCurrencyColor(currency)} flex flex-col items-center`}
                       >
                         <div className="relative w-full aspect-square mb-2">
                           <picture>
