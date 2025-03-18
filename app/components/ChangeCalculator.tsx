@@ -248,33 +248,33 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
       )}
 
       <div className="space-y-4">
-        <div className="flex justify-between items-center bg-white p-3 rounded">
-          <span className="font-bold">Amount shown on till:</span>
+        <div className="flex justify-between items-center bg-white p-4 rounded-lg shadow-md">
+          <span className="text-xl font-bold">Amount shown on till:</span>
           <input
             type="number"
             value={amountOnTill}
             onChange={handleAmountChange}
-            className="border rounded p-2 w-32 text-right"
+            className="border rounded-lg p-3 w-40 text-right text-2xl font-bold"
             step="0.01"
             min="0"
           />
         </div>
 
-        <div className="flex justify-between items-center bg-white p-3 rounded">
-          <span className="font-bold">Money handed by customer:</span>
-          <span className="font-bold">£{moneyHandedByCustomer.toFixed(2)}</span>
+        <div className="flex justify-between items-center bg-white p-4 rounded-lg shadow-md">
+          <span className="text-xl font-bold">Money handed by customer:</span>
+          <span className="text-2xl font-bold">£{moneyHandedByCustomer.toFixed(2)}</span>
         </div>
 
-        <div className="flex justify-between items-center bg-white p-3 rounded">
-          <span className="font-bold">Change due:</span>
-          <span className={`font-bold ${changeDue < 0 ? 'text-red-500' : 'text-green-500'}`}>
+        <div className="flex justify-between items-center bg-white p-4 rounded-lg shadow-md">
+          <span className="text-xl font-bold">Change due:</span>
+          <span className={`text-2xl font-bold ${changeDue < 0 ? 'text-red-500' : 'text-green-500'}`}>
             £{changeDue.toFixed(2)}
           </span>
         </div>
 
         {changeBreakdown.length > 0 && (
           <div className="mt-6">
-            <h3 className="text-lg font-bold mb-2">Change to give back:</h3>
+            <h3 className="text-xl font-bold mb-3">Change to give back:</h3>
             
             {/* Notes Section */}
             {changeBreakdown.some(c => c.type === 'note') && (
