@@ -11,7 +11,15 @@ interface ChangeCalculatorProps {
   onComplete: (transaction: { amountOnTill: number; moneyHandedByCustomer: number; changeDue: number }) => void;
 }
 
+interface HistoryEntry {
+  amountOnTill: string;
+  changeDue: number;
+  breakdown: Currency[];
+  timestamp: string;
+}
+
 const CURRENCY_DATA: Currency[] = [
+  { value: 20, type: 'note', label: '£20', count: 0, imagePath: '/images/currency/20.png' },
   { value: 10, type: 'note', label: '£10', count: 0, imagePath: '/images/currency/10.png' },
   { value: 5, type: 'note', label: '£5', count: 0, imagePath: '/images/currency/5.png' },
   { value: 2, type: 'coin', label: '£2', count: 0, imagePath: '/images/currency/2.png' },
@@ -28,6 +36,8 @@ const CURRENCY_DATA: Currency[] = [
 const getCurrencyColor = (currency: Currency) => {
   switch (currency.label) {
     // Notes
+    case '£20':
+      return 'bg-purple-100';  // Purple for £20
     case '£10':
       return 'bg-orange-100';  // Brown/orange for £10
     case '£5':
@@ -62,6 +72,8 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
     disabledCurrency: [],
     pastInteractions: []
   });
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
 
   useEffect(() => {
     // Load preferences from localStorage
@@ -70,6 +82,19 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
       setPreferences(JSON.parse(savedPreferences));
     }
   }, []);
+
+  // Load history from localStorage on mount
+  useEffect(() => {
+    const savedHistory = localStorage.getItem('calculatorHistory');
+    if (savedHistory) {
+      setHistory(JSON.parse(savedHistory));
+    }
+  }, []);
+
+  // Save history to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('calculatorHistory', JSON.stringify(history));
+  }, [history]);
 
   const calculateChange = (amount: number) => {
     let remaining = Number(amount.toFixed(2));
@@ -154,17 +179,101 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
       return;
     }
 
+    // Add current calculation to history
+    const newEntry: HistoryEntry = {
+      amountOnTill: amountOnTill,
+      changeDue: changeDue,
+      breakdown: changeBreakdown,
+      timestamp: new Date().toLocaleString()
+    };
+    setHistory(prev => [newEntry, ...prev].slice(0, 10)); // Keep last 10 entries
+
+    // Call the onComplete callback
     onComplete({
       amountOnTill: parseFloat(amountOnTill),
       moneyHandedByCustomer,
       changeDue,
     });
+    
+    // Reset calculator
+    setAmountOnTill('');
+    setChangeDue(0);
+    setChangeBreakdown([]);
+  };
+
+  const clearHistory = () => {
+    setHistory([]);
+    localStorage.removeItem('calculatorHistory');
   };
 
   return (
     <div className="p-4 bg-[#F9F9F2] rounded-lg shadow-lg max-w-2xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4 text-center font-heiti">Change Calculator</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold text-center font-heiti">Change Calculator</h2>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowHistory(!showHistory)}
+            className="px-4 py-2 bg-[#7CB8B1] text-white rounded-full hover:bg-opacity-90 font-bold flex items-center gap-2"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+              <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+            </svg>
+            {showHistory ? 'Hide History' : 'Show History'}
+          </button>
+          <button
+            onClick={() => {
+              setAmountOnTill('');
+              setChangeDue(0);
+              setChangeBreakdown([]);
+            }}
+            className="px-4 py-2 bg-[#7CB8B1] text-white rounded-full hover:bg-opacity-90 font-bold flex items-center gap-2"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+            </svg>
+            Refresh
+          </button>
+        </div>
+      </div>
       
+      {showHistory && history.length > 0 && (
+        <div className="mb-6 bg-white p-4 rounded-lg shadow">
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="text-lg font-bold">Recent Calculations</h3>
+            <button
+              onClick={clearHistory}
+              className="text-sm text-red-500 hover:text-red-700"
+            >
+              Clear History
+            </button>
+          </div>
+          <div className="space-y-3 max-h-60 overflow-y-auto">
+            {history.map((entry, index) => (
+              <div key={index} className="p-3 bg-gray-50 rounded border border-gray-200">
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>Amount: £{entry.amountOnTill}</span>
+                  <span>Change: £{entry.changeDue.toFixed(2)}</span>
+                </div>
+                <div className="mt-1 text-xs text-gray-500">
+                  {entry.timestamp}
+                </div>
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {entry.breakdown.map((currency, idx) => (
+                    <span
+                      key={idx}
+                      className={`px-2 py-1 rounded text-xs ${getCurrencyColor(currency)}`}
+                    >
+                      {currency.label} × {currency.count}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="space-y-4">
         <div className="flex justify-between items-center bg-white p-3 rounded">
           <span className="font-bold">Amount shown on till:</span>
@@ -288,7 +397,7 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
 
         <button
           onClick={handleComplete}
-          className="w-full mt-6 px-6 py-3 bg-[#7CB8B1] text-white rounded hover:bg-opacity-90 font-bold"
+          className="w-full mt-6 px-6 py-4 bg-[#4C9B8F] text-white rounded-lg hover:bg-opacity-90 font-bold text-lg shadow-md transition-all duration-200 hover:shadow-lg hover:transform hover:scale-[1.02] active:scale-[0.98]"
         >
           Done
         </button>

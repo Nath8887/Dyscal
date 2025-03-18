@@ -1,21 +1,23 @@
 'use client';
 
-import React from 'react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Currency, Preferences as PreferencesType } from '../types/types';
 import { toast } from 'react-hot-toast';
 
 const CURRENCY_DATA: Currency[] = [
-  { value: 10, type: "note", label: "£10", count: 0, imagePath: "/images/currency/10.png" },
-  { value: 5, type: "note", label: "£5", count: 0, imagePath: "/images/currency/5.png" },
-  { value: 2, type: "coin", label: "£2", count: 0, imagePath: "/images/currency/2.png" },
-  { value: 1, type: "coin", label: "£1", count: 0, imagePath: "/images/currency/1.png" },
-  { value: 0.5, type: "coin", label: "50p", count: 0, imagePath: "/images/currency/50p.png" },
-  { value: 0.2, type: "coin", label: "20p", count: 0, imagePath: "/images/currency/20p.png" },
-  { value: 0.1, type: "coin", label: "10p", count: 0, imagePath: "/images/currency/10p.png" },
-  { value: 0.05, type: "coin", label: "5p", count: 0, imagePath: "/images/currency/5p.png" },
-  { value: 0.02, type: "coin", label: "2p", count: 0, imagePath: "/images/currency/2p.png" },
-  { value: 0.01, type: "coin", label: "1p", count: 0, imagePath: "/images/currency/1p.png" }
+  // Notes
+  { value: 20, type: 'note', label: '£20', count: 0, imagePath: '/images/currency/20.png' },
+  { value: 10, type: 'note', label: '£10', count: 0, imagePath: '/images/currency/10.png' },
+  { value: 5, type: 'note', label: '£5', count: 0, imagePath: '/images/currency/5.png' },
+  // Coins
+  { value: 2, type: 'coin', label: '£2', count: 0, imagePath: '/images/currency/2.png' },
+  { value: 1, type: 'coin', label: '£1', count: 0, imagePath: '/images/currency/1.png' },
+  { value: 0.5, type: 'coin', label: '50p', count: 0, imagePath: '/images/currency/50p.png' },
+  { value: 0.2, type: 'coin', label: '20p', count: 0, imagePath: '/images/currency/20p.png' },
+  { value: 0.1, type: 'coin', label: '10p', count: 0, imagePath: '/images/currency/10p.png' },
+  { value: 0.05, type: 'coin', label: '5p', count: 0, imagePath: '/images/currency/5p.png' },
+  { value: 0.02, type: 'coin', label: '2p', count: 0, imagePath: '/images/currency/2p.png' },
+  { value: 0.01, type: 'coin', label: '1p', count: 0, imagePath: '/images/currency/1p.png' }
 ];
 
 // Haptic feedback function
@@ -117,91 +119,70 @@ export default function Preferences({ onClose }: PreferencesProps) {
     });
   };
 
+  const isCurrencyDisabled = (currency: Currency) => {
+    return preferences.disabledCurrency.some(c => c.label === currency.label);
+  };
+
+  const notes = CURRENCY_DATA.filter(c => c.type === 'note');
+  const coins = CURRENCY_DATA.filter(c => c.type === 'coin');
+
   return (
     <div className="p-4 bg-[#F9F9F2] rounded-lg shadow-lg max-w-2xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold font-heiti">Preferences</h2>
         <button
-          onClick={onClose}
-          className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+          onClick={() => window.history.back()}
+          className="px-4 py-2 bg-[#7CB8B1] text-white rounded-full hover:bg-opacity-90"
         >
           Close
         </button>
       </div>
 
-      <div className="space-y-6">
-        <div>
-          <h3 className="text-lg font-bold mb-3">Available Currency</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-            {CURRENCY_DATA.map((currency) => {
-              const isDisabled = preferences.disabledCurrency.some(
-                (c) => c.label === currency.label
-              );
-              return (
-                <button
-                  key={currency.label}
-                  onClick={() => toggleCurrency(currency)}
-                  className={`p-6 rounded-lg transition-all transform hover:scale-105 active:scale-95 shadow-md ${
-                    isDisabled
-                      ? 'bg-gray-300 hover:bg-gray-200'
-                      : getCurrencyColor(currency)
-                  }`}
-                >
-                  <div className="text-2xl font-bold mb-2">{currency.label}</div>
-                  <div className="text-lg font-medium">
-                    {isDisabled ? 'Disabled' : 'Available'}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        <div>
-          <div className="flex justify-between items-center mb-3">
-            <h3 className="text-lg font-bold">Past Interactions</h3>
+      <h3 className="text-xl font-bold mb-4">Available Currency</h3>
+      
+      {/* Notes Section */}
+      <div className="mb-6">
+        <h4 className="text-lg font-semibold mb-3">Notes</h4>
+        <div className="grid grid-cols-3 gap-3">
+          {notes.map(currency => (
             <button
-              onClick={clearCache}
-              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 text-base shadow-md transition-colors"
+              key={currency.label}
+              onClick={() => toggleCurrency(currency)}
+              className={`p-4 rounded-lg transition-all duration-200 ${
+                isCurrencyDisabled(currency)
+                  ? 'bg-gray-200 text-gray-500'
+                  : 'bg-white hover:bg-gray-50'
+              }`}
             >
-              Clear History
+              <div className="text-lg font-bold mb-2">{currency.label}</div>
+              <div className="text-sm">
+                {isCurrencyDisabled(currency) ? 'Disabled' : 'Available'}
+              </div>
             </button>
-          </div>
-          
-          <div className="bg-white rounded-lg overflow-hidden">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-4 py-2 text-left">Time</th>
-                  <th className="px-4 py-2 text-left">Date</th>
-                  <th className="px-4 py-2 text-right">Amount on Till</th>
-                  <th className="px-4 py-2 text-right">Money Handed</th>
-                  <th className="px-4 py-2 text-right">Change Due</th>
-                </tr>
-              </thead>
-              <tbody>
-                {preferences.pastInteractions.slice(-5).map((transaction, index) => (
-                  <tr key={index} className="border-t">
-                    <td className="px-4 py-2">
-                      {new Date(transaction.timestamp).toLocaleTimeString()}
-                    </td>
-                    <td className="px-4 py-2">
-                      {new Date(transaction.timestamp).toLocaleDateString()}
-                    </td>
-                    <td className="px-4 py-2 text-right">
-                      £{transaction.amountOnTill.toFixed(2)}
-                    </td>
-                    <td className="px-4 py-2 text-right">
-                      £{transaction.moneyHandedByCustomer.toFixed(2)}
-                    </td>
-                    <td className="px-4 py-2 text-right">
-                      £{transaction.changeDue.toFixed(2)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Coins Section */}
+      <div>
+        <h4 className="text-lg font-semibold mb-3">Coins</h4>
+        <div className="grid grid-cols-4 gap-3">
+          {coins.map(currency => (
+            <button
+              key={currency.label}
+              onClick={() => toggleCurrency(currency)}
+              className={`p-4 rounded-lg transition-all duration-200 ${
+                isCurrencyDisabled(currency)
+                  ? 'bg-gray-200 text-gray-500'
+                  : 'bg-white hover:bg-gray-50'
+              }`}
+            >
+              <div className="text-lg font-bold mb-2">{currency.label}</div>
+              <div className="text-sm">
+                {isCurrencyDisabled(currency) ? 'Disabled' : 'Available'}
+              </div>
+            </button>
+          ))}
         </div>
       </div>
     </div>
