@@ -150,7 +150,7 @@ export default function Preferences({ onClose }: PreferencesProps) {
               onClick={() => toggleCurrency(currency)}
               className={`p-4 rounded-lg transition-all duration-200 ${
                 isCurrencyDisabled(currency)
-                  ? 'bg-gray-200 text-gray-500'
+                  ? 'bg-gray-200'
                   : 'bg-white hover:bg-gray-50'
               }`}
             >

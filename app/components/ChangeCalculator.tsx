@@ -97,79 +97,49 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
   }, [history]);
 
   const calculateChange = (amount: number) => {
-    let remaining = Number(amount.toFixed(2));
+    const availableCurrency = CURRENCY_DATA.filter(
+      (currency) => !preferences.disabledCurrency.some((c) => c.label === currency.label)
+    ).sort((a, b) => b.value - a.value);
+
+    let remainingChange = amount;
     const breakdown: Currency[] = [];
-    
-    // Filter out disabled currencies and sort by value (highest to lowest)
-    const availableCurrency = CURRENCY_DATA
-      .filter(currency => !preferences.disabledCurrency.some(disabled => disabled.label === currency.label))
-      .sort((a, b) => b.value - a.value);
-    
-    // Try to make change with available denominations
-    for (const currency of availableCurrency) {
-      if (remaining >= currency.value) {
-        const count = Math.floor(remaining / currency.value);
-        remaining = Number((remaining % currency.value).toFixed(2));
-        if (count > 0) {
-          breakdown.push({ ...currency, count });
-        }
+
+    availableCurrency.forEach((currency) => {
+      const count = Math.floor(remainingChange / currency.value);
+      if (count > 0) {
+        breakdown.push({ ...currency, count });
+        remainingChange = parseFloat((remainingChange % currency.value).toFixed(2));
       }
-    }
-    
-    // If we still have remaining amount
-    if (remaining > 0) {
-      // Check if we can make it with smaller denominations
-      const smallerDenominations = availableCurrency.filter(c => c.value < remaining);
-      
-      if (smallerDenominations.length > 0) {
-        let tempRemaining = remaining;
-        const tempBreakdown: Currency[] = [];
-        
-        // Try to make up the remaining amount with smaller denominations
-        for (const currency of smallerDenominations) {
-          if (tempRemaining >= currency.value) {
-            const count = Math.floor(tempRemaining / currency.value);
-            tempRemaining = Number((tempRemaining % currency.value).toFixed(2));
-            if (count > 0) {
-              tempBreakdown.push({ ...currency, count });
-            }
-          }
-        }
-        
-        // If we managed to make up the amount with smaller denominations
-        if (tempRemaining === 0) {
-          breakdown.push(...tempBreakdown);
-          remaining = 0;
-        }
-      }
-      
-      // If we still can't make exact change
-      if (remaining > 0) {
-        toast.error(`Unable to make exact change (${remaining.toFixed(2)} remaining) with available currency`);
-      }
-    }
-    
+    });
+
+    setChangeBreakdown(breakdown);
     return breakdown;
   };
 
-  const handleAmountInput = (value: string) => {
-    if (value === '') {
-      setAmountOnTill('');
-      setChangeDue(0);
-      setChangeBreakdown([]);
-      return;
-    }
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setAmountOnTill(value);
 
     const numericValue = parseFloat(value);
     if (!isNaN(numericValue)) {
-      setAmountOnTill(value);
-      const change = moneyHandedByCustomer - numericValue;
-      setChangeDue(change);
-      if (change > 0) {
-        setChangeBreakdown(calculateChange(change));
-      } else {
-        setChangeBreakdown([]);
-      }
+      const change = calculateChange(numericValue);
+      setChangeDue(numericValue);
+      
+      // Show toast with currency status
+      change.forEach(currency => {
+        const isDisabled = preferences.disabledCurrency.some(c => c.label === currency.label);
+        toast(
+          `${currency.label} ${isDisabled ? 'not available' : 'available'}`,
+          {
+            icon: isDisabled ? '❌' : '✅',
+            style: {
+              background: isDisabled ? '#FEE2E2' : '#ECFDF5',
+              color: isDisabled ? '#DC2626' : '#059669',
+              fontWeight: 'bold'
+            }
+          }
+        );
+      });
     }
   };
 
@@ -280,7 +250,7 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
           <input
             type="number"
             value={amountOnTill}
-            onChange={(e) => handleAmountInput(e.target.value)}
+            onChange={handleAmountChange}
             className="border rounded p-2 w-32 text-right"
             step="0.01"
             min="0"
