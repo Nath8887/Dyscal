@@ -150,13 +150,13 @@ export default function Preferences({ onClose }: PreferencesProps) {
             <button
               key={currency.label}
               onClick={() => toggleCurrency(currency)}
-              className={`p-4 rounded-lg transition-all duration-200 ${
+              className={`p-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg ${
                 isCurrencyDisabled(currency)
                   ? 'bg-gray-200'
-                  : 'bg-white hover:bg-gray-50'
+                  : getCurrencyColor(currency)
               }`}
             >
-              <div className={`text-lg font-bold mb-2 ${
+              <div className={`text-xl font-bold mb-2 ${
                 isCurrencyDisabled(currency) ? 'text-red-500' : ''
               }`}>
                 {currency.label}
@@ -179,13 +179,13 @@ export default function Preferences({ onClose }: PreferencesProps) {
             <button
               key={currency.label}
               onClick={() => toggleCurrency(currency)}
-              className={`p-4 rounded-lg transition-all duration-200 ${
+              className={`p-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg ${
                 isCurrencyDisabled(currency)
                   ? 'bg-gray-200'
-                  : 'bg-white hover:bg-gray-50'
+                  : getCurrencyColor(currency)
               }`}
             >
-              <div className={`text-lg font-bold mb-2 ${
+              <div className={`text-xl font-bold mb-2 ${
                 isCurrencyDisabled(currency) ? 'text-red-500' : ''
               }`}>
                 {currency.label}

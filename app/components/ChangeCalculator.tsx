@@ -37,30 +37,30 @@ const getCurrencyColor = (currency: Currency) => {
   switch (currency.label) {
     // Notes
     case '£20':
-      return 'bg-purple-100';  // Purple for £20
+      return 'bg-purple-100 hover:bg-purple-200';  // Purple for £20
     case '£10':
-      return 'bg-orange-100';  // Brown/orange for £10
+      return 'bg-orange-100 hover:bg-orange-200';  // Brown/orange for £10
     case '£5':
-      return 'bg-teal-100';    // Turquoise/teal for £5
+      return 'bg-teal-100 hover:bg-teal-200';      // Turquoise/teal for £5
     // Coins
     case '£2':
-      return 'bg-zinc-100';    // Silver/gold for £2
+      return 'bg-zinc-100 hover:bg-zinc-200';      // Silver/gold for £2
     case '£1':
-      return 'bg-yellow-100';  // Gold for £1
+      return 'bg-yellow-100 hover:bg-yellow-200';  // Gold for £1
     case '50p':
-      return 'bg-slate-100';   // Silver for 50p
+      return 'bg-slate-100 hover:bg-slate-200';    // Silver for 50p
     case '20p':
-      return 'bg-slate-100';   // Silver for 20p
+      return 'bg-slate-100 hover:bg-slate-200';    // Silver for 20p
     case '10p':
-      return 'bg-amber-100';   // Bronze for 10p
+      return 'bg-amber-100 hover:bg-amber-200';    // Bronze for 10p
     case '5p':
-      return 'bg-slate-100';   // Silver for 5p
+      return 'bg-slate-100 hover:bg-slate-200';    // Silver for 5p
     case '2p':
-      return 'bg-amber-100';   // Bronze for 2p
+      return 'bg-amber-100 hover:bg-amber-200';    // Bronze for 2p
     case '1p':
-      return 'bg-amber-100';   // Bronze for 1p
+      return 'bg-amber-100 hover:bg-amber-200';    // Bronze for 1p
     default:
-      return 'bg-gray-100';
+      return 'bg-gray-100 hover:bg-gray-200';
   }
 };
 
