@@ -73,6 +73,7 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
     pastInteractions: []
   });
   const [showHistory, setShowHistory] = useState(false);
+  const [showNumpad, setShowNumpad] = useState(false);
 
   useEffect(() => {
     // Load preferences from localStorage
@@ -126,6 +127,26 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
     setAmountOnTill(value);
 
     const numericValue = parseFloat(value);
+    if (!isNaN(numericValue)) {
+      calculateChange(numericValue);
+      setChangeDue(numericValue);
+    }
+  };
+
+  const handleNumpadInput = (value: string) => {
+    if (value === 'backspace') {
+      setAmountOnTill(prev => prev.slice(0, -1));
+    } else if (value === 'clear') {
+      setAmountOnTill('');
+    } else {
+      // Ensure we don't add multiple decimal points
+      if (value === '.' && amountOnTill.includes('.')) return;
+      // Limit to 2 decimal places
+      if (amountOnTill.includes('.') && amountOnTill.split('.')[1]?.length >= 2) return;
+      setAmountOnTill(prev => prev + value);
+    }
+
+    const numericValue = parseFloat(amountOnTill + (value !== 'backspace' && value !== 'clear' ? value : ''));
     if (!isNaN(numericValue)) {
       calculateChange(numericValue);
       setChangeDue(numericValue);
@@ -253,15 +274,65 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
       <div className="space-y-6">
         <div className="flex justify-between items-center bg-white p-6 rounded-xl shadow-lg">
           <span className="text-2xl font-bold">Amount shown on till:</span>
-          <input
-            type="number"
-            value={amountOnTill}
-            onChange={handleAmountChange}
-            className="border-2 border-gray-300 rounded-xl p-4 w-48 text-right text-3xl font-bold focus:border-[#7CB8B1] focus:ring-2 focus:ring-[#7CB8B1] focus:outline-none"
-            step="0.01"
-            min="0"
-          />
+          <div className="flex items-center gap-3">
+            <input
+              type="number"
+              value={amountOnTill}
+              onChange={handleAmountChange}
+              className="border-2 border-gray-300 rounded-xl p-4 w-48 text-right text-3xl font-bold focus:border-[#7CB8B1] focus:ring-2 focus:ring-[#7CB8B1] focus:outline-none"
+              step="0.01"
+              min="0"
+            />
+            <button
+              onClick={() => setShowNumpad(!showNumpad)}
+              className="p-2 bg-[#7CB8B1] text-white rounded-lg hover:bg-opacity-90"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+            </button>
+          </div>
         </div>
+
+        {showNumpad && (
+          <div className="bg-white p-4 rounded-xl shadow-lg">
+            <div className="grid grid-cols-3 gap-2">
+              {[7, 8, 9, 4, 5, 6, 1, 2, 3].map((num) => (
+                <button
+                  key={num}
+                  onClick={() => handleNumpadInput(num.toString())}
+                  className="p-4 text-2xl font-bold bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  {num}
+                </button>
+              ))}
+              <button
+                onClick={() => handleNumpadInput('0')}
+                className="p-4 text-2xl font-bold bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                0
+              </button>
+              <button
+                onClick={() => handleNumpadInput('.')}
+                className="p-4 text-2xl font-bold bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                .
+              </button>
+              <button
+                onClick={() => handleNumpadInput('backspace')}
+                className="p-4 text-xl font-bold bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors flex items-center justify-center"
+              >
+                ←
+              </button>
+            </div>
+            <button
+              onClick={() => handleNumpadInput('clear')}
+              className="w-full mt-2 p-4 text-xl font-bold bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
+            >
+              Clear
+            </button>
+          </div>
+        )}
 
         <div className="flex justify-between items-center bg-white p-6 rounded-xl shadow-lg">
           <span className="text-2xl font-bold">Money handed by customer:</span>
