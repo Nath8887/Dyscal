@@ -89,7 +89,7 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
       .filter(currency => !preferences.disabledCurrency.some(c => c.label === currency.label))
       .sort((a, b) => b.value - a.value);
 
-    let remaining = Number(amount.toFixed(2));
+    let remaining = Math.abs(amount);
     const breakdown: Currency[] = [];
 
     for (const currency of availableCurrency) {
@@ -128,28 +128,41 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
 
     const numericValue = parseFloat(value);
     if (!isNaN(numericValue)) {
-      calculateChange(numericValue);
-      setChangeDue(numericValue);
+      const change = moneyHandedByCustomer - numericValue;
+      setChangeDue(change);
+      calculateChange(Math.abs(change));
+    } else {
+      setChangeDue(0);
+      setChangeBreakdown([]);
     }
   };
 
   const handleNumpadInput = (value: string) => {
+    let newAmount = amountOnTill;
+    
     if (value === 'backspace') {
-      setAmountOnTill(prev => prev.slice(0, -1));
+      newAmount = amountOnTill.slice(0, -1);
     } else if (value === 'clear') {
-      setAmountOnTill('');
+      newAmount = '';
     } else {
       // Ensure we don't add multiple decimal points
       if (value === '.' && amountOnTill.includes('.')) return;
       // Limit to 2 decimal places
       if (amountOnTill.includes('.') && amountOnTill.split('.')[1]?.length >= 2) return;
-      setAmountOnTill(prev => prev + value);
+      newAmount = amountOnTill + value;
     }
 
-    const numericValue = parseFloat(amountOnTill + (value !== 'backspace' && value !== 'clear' ? value : ''));
+    setAmountOnTill(newAmount);
+
+    // Calculate change if we have a valid number
+    const numericValue = parseFloat(newAmount);
     if (!isNaN(numericValue)) {
-      calculateChange(numericValue);
-      setChangeDue(numericValue);
+      const change = moneyHandedByCustomer - numericValue;
+      setChangeDue(change);
+      calculateChange(Math.abs(change));
+    } else {
+      setChangeDue(0);
+      setChangeBreakdown([]);
     }
   };
 
@@ -368,87 +381,4 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
                         <div className="relative w-full aspect-[2/1] mb-2">
                           <picture>
                             <source
-                              srcSet={`${currency.imagePath.replace('.png', '')}-sm.webp 100w, ${currency.imagePath.replace('.png', '')}-md.webp 150w, ${currency.imagePath.replace('.png', '')}.webp 200w`}
-                              sizes="(max-width: 640px) 100px, (max-width: 768px) 150px, 200px"
-                              type="image/webp"
-                            />
-                            <source
-                              srcSet={`${currency.imagePath.replace('.png', '')}-sm.png 100w, ${currency.imagePath.replace('.png', '')}-md.png 150w, ${currency.imagePath.replace('.png', '')}.png 200w`}
-                              sizes="(max-width: 640px) 100px, (max-width: 768px) 150px, 200px"
-                              type="image/png"
-                            />
-                            <Image
-                              src={currency.imagePath}
-                              alt={currency.label}
-                              fill
-                              className="object-contain rounded"
-                              sizes="(max-width: 640px) 100px, (max-width: 768px) 150px, 200px"
-                              priority
-                            />
-                          </picture>
-                        </div>
-                        <div className="text-lg font-bold">{currency.label}</div>
-                        <div className="text-sm font-semibold">Quantity: {currency.count}</div>
-                      </motion.div>
-                    ))}
-                </div>
-              </div>
-            )}
-            
-            {/* Coins Section */}
-            {changeBreakdown.some(c => c.type === 'coin') && (
-              <div>
-                <h4 className="text-md font-semibold mb-2">Coins:</h4>
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
-                  {changeBreakdown
-                    .filter(c => c.type === 'coin')
-                    .map((currency, index) => (
-                      <motion.div
-                        key={currency.label}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                        className={`p-2 rounded-lg ${getCurrencyColor(currency)} flex flex-col items-center`}
-                      >
-                        <div className="relative w-full aspect-square mb-2">
-                          <picture>
-                            <source
-                              srcSet={`${currency.imagePath.replace('.png', '')}-sm.webp 100w, ${currency.imagePath.replace('.png', '')}-md.webp 150w, ${currency.imagePath.replace('.png', '')}.webp 200w`}
-                              sizes="(max-width: 640px) 80px, (max-width: 768px) 100px, 150px"
-                              type="image/webp"
-                            />
-                            <source
-                              srcSet={`${currency.imagePath.replace('.png', '')}-sm.png 100w, ${currency.imagePath.replace('.png', '')}-md.png 150w, ${currency.imagePath.replace('.png', '')}.png 200w`}
-                              sizes="(max-width: 640px) 80px, (max-width: 768px) 100px, 150px"
-                              type="image/png"
-                            />
-                            <Image
-                              src={currency.imagePath}
-                              alt={currency.label}
-                              fill
-                              className="object-contain rounded-full"
-                              sizes="(max-width: 640px) 80px, (max-width: 768px) 100px, 150px"
-                              priority
-                            />
-                          </picture>
-                        </div>
-                        <div className="text-lg font-bold">{currency.label}</div>
-                        <div className="text-sm font-semibold">Quantity: {currency.count}</div>
-                      </motion.div>
-                    ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        <button
-          onClick={handleComplete}
-          className="w-full mt-6 px-6 py-4 bg-[#4C9B8F] text-white rounded-lg hover:bg-opacity-90 font-bold text-lg shadow-md transition-all duration-200 hover:shadow-lg hover:transform hover:scale-[1.02] active:scale-[0.98]"
-        >
-          Done
-        </button>
-      </div>
-    </div>
-  );
-} 
+                              srcSet={`
