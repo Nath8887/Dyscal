@@ -97,19 +97,38 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
   }, [history]);
 
   const calculateChange = (amount: number) => {
-    const availableCurrency = CURRENCY_DATA.filter(
-      (currency) => !preferences.disabledCurrency.some((c) => c.label === currency.label)
-    ).sort((a, b) => b.value - a.value);
+    // Filter out disabled currencies and sort by value
+    const availableCurrency = CURRENCY_DATA
+      .filter(currency => !preferences.disabledCurrency.some(c => c.label === currency.label))
+      .sort((a, b) => b.value - a.value);
 
-    let remainingChange = amount;
+    let remaining = Number(amount.toFixed(2));
     const breakdown: Currency[] = [];
 
-    availableCurrency.forEach((currency) => {
-      const count = Math.floor(remainingChange / currency.value);
-      if (count > 0) {
-        breakdown.push({ ...currency, count });
-        remainingChange = parseFloat((remainingChange % currency.value).toFixed(2));
+    for (const currency of availableCurrency) {
+      if (remaining >= currency.value) {
+        const count = Math.floor(remaining / currency.value);
+        remaining = Number((remaining % currency.value).toFixed(2));
+        if (count > 0) {
+          breakdown.push({ ...currency, count });
+        }
       }
+    }
+
+    // Show status notifications for all currencies
+    CURRENCY_DATA.forEach(currency => {
+      const isDisabled = preferences.disabledCurrency.some(c => c.label === currency.label);
+      toast(
+        `${currency.label} ${isDisabled ? 'not available' : 'available'}`,
+        {
+          icon: isDisabled ? '❌' : '✅',
+          style: {
+            background: isDisabled ? '#FEE2E2' : '#ECFDF5',
+            color: isDisabled ? '#DC2626' : '#059669',
+            fontWeight: 'bold'
+          }
+        }
+      );
     });
 
     setChangeBreakdown(breakdown);
@@ -122,24 +141,8 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
 
     const numericValue = parseFloat(value);
     if (!isNaN(numericValue)) {
-      const change = calculateChange(numericValue);
+      calculateChange(numericValue);
       setChangeDue(numericValue);
-      
-      // Show toast with currency status
-      change.forEach(currency => {
-        const isDisabled = preferences.disabledCurrency.some(c => c.label === currency.label);
-        toast(
-          `${currency.label} ${isDisabled ? 'not available' : 'available'}`,
-          {
-            icon: isDisabled ? '❌' : '✅',
-            style: {
-              background: isDisabled ? '#FEE2E2' : '#ECFDF5',
-              color: isDisabled ? '#DC2626' : '#059669',
-              fontWeight: 'bold'
-            }
-          }
-        );
-      });
     }
   };
 
