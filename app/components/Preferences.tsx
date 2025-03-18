@@ -26,6 +26,36 @@ const triggerHaptic = () => {
   }
 };
 
+// Get currency-specific colors
+const getCurrencyColor = (currency: Currency) => {
+  switch (currency.label) {
+    // Notes
+    case '£10':
+      return 'bg-orange-100 hover:bg-orange-200';  // Brown/orange for £10
+    case '£5':
+      return 'bg-teal-100 hover:bg-teal-200';      // Turquoise/teal for £5
+    // Coins
+    case '£2':
+      return 'bg-zinc-100 hover:bg-zinc-200';      // Silver/gold for £2
+    case '£1':
+      return 'bg-yellow-100 hover:bg-yellow-200';  // Gold for £1
+    case '50p':
+      return 'bg-slate-100 hover:bg-slate-200';    // Silver for 50p
+    case '20p':
+      return 'bg-slate-100 hover:bg-slate-200';    // Silver for 20p
+    case '10p':
+      return 'bg-amber-100 hover:bg-amber-200';    // Bronze for 10p
+    case '5p':
+      return 'bg-slate-100 hover:bg-slate-200';    // Silver for 5p
+    case '2p':
+      return 'bg-amber-100 hover:bg-amber-200';    // Bronze for 2p
+    case '1p':
+      return 'bg-amber-100 hover:bg-amber-200';    // Bronze for 1p
+    default:
+      return 'bg-gray-100 hover:bg-gray-200';
+  }
+};
+
 interface PreferencesProps {
   onClose: () => void;
 }
@@ -114,9 +144,7 @@ export default function Preferences({ onClose }: PreferencesProps) {
                   className={`p-6 rounded-lg transition-all transform hover:scale-105 active:scale-95 shadow-md ${
                     isDisabled
                       ? 'bg-gray-300 hover:bg-gray-200'
-                      : currency.type === 'note'
-                      ? 'bg-green-100 hover:bg-green-200'
-                      : 'bg-blue-100 hover:bg-blue-200'
+                      : getCurrencyColor(currency)
                   }`}
                 >
                   <div className="text-2xl font-bold mb-2">{currency.label}</div>
