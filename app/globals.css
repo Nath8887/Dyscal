@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-color: #7CB8B1;
+  --background-color: #F9F9F2;
+  --text-color: #333333;
+}
+
+@layer base {
+  body {
+    @apply bg-[var(--background-color)] text-[var(--text-color)];
+    font-family: 'Heiti TC', sans-serif;
+  }
+
+  .font-heiti {
+    font-family: 'Heiti TC', sans-serif;
+  }
+}
+
+/* Accessibility improvements */
+@layer utilities {
+  .focus-visible {
+    @apply outline-none ring-2 ring-[var(--primary-color)] ring-offset-2;
+  }
+
+  .high-contrast {
+    @apply text-[var(--text-color)] bg-[var(--background-color)];
+  }
+}
+
+/* Custom animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Input styles */
+input[type="number"] {
+  appearance: none;
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Button styles */
+button {
+  transition: all 0.2s;
+}
+
+button:focus-visible {
+  outline: none;
+  ring: 2px solid var(--primary-color);
+  ring-offset: 2px;
+}
+
+/* Table styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+th {
+  font-weight: bold;
+  background-color: #f9fafb;
+}
