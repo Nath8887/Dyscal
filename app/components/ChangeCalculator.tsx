@@ -42,7 +42,7 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
   }, []);
 
   const calculateChange = (amount: number) => {
-    let remaining = amount;
+    let remaining = Number(amount.toFixed(2));
     const breakdown: Currency[] = [];
     
     // Filter out disabled currencies and sort by value (highest to lowest)
@@ -50,6 +50,7 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
       .filter(currency => !preferences.disabledCurrency.some(disabled => disabled.label === currency.label))
       .sort((a, b) => b.value - a.value);
     
+    // Try to make change with available denominations
     for (const currency of availableCurrency) {
       if (remaining >= currency.value) {
         const count = Math.floor(remaining / currency.value);
@@ -60,9 +61,37 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
       }
     }
     
-    // If we still have remaining amount and no smaller denominations available
-    if (remaining > 0 && breakdown.length === 0) {
-      toast.error('Unable to make exact change with available currency');
+    // If we still have remaining amount
+    if (remaining > 0) {
+      // Check if we can make it with smaller denominations
+      const smallerDenominations = availableCurrency.filter(c => c.value < remaining);
+      
+      if (smallerDenominations.length > 0) {
+        let tempRemaining = remaining;
+        const tempBreakdown: Currency[] = [];
+        
+        // Try to make up the remaining amount with smaller denominations
+        for (const currency of smallerDenominations) {
+          if (tempRemaining >= currency.value) {
+            const count = Math.floor(tempRemaining / currency.value);
+            tempRemaining = Number((tempRemaining % currency.value).toFixed(2));
+            if (count > 0) {
+              tempBreakdown.push({ ...currency, count });
+            }
+          }
+        }
+        
+        // If we managed to make up the amount with smaller denominations
+        if (tempRemaining === 0) {
+          breakdown.push(...tempBreakdown);
+          remaining = 0;
+        }
+      }
+      
+      // If we still can't make exact change
+      if (remaining > 0) {
+        toast.error(`Unable to make exact change (${remaining.toFixed(2)} remaining) with available currency`);
+      }
     }
     
     return breakdown;
