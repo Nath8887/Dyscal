@@ -32,6 +32,8 @@ const triggerHaptic = () => {
 const getCurrencyColor = (currency: Currency) => {
   switch (currency.label) {
     // Notes
+    case '£20':
+      return 'bg-purple-100 hover:bg-purple-200';  // Purple for £20
     case '£10':
       return 'bg-orange-100 hover:bg-orange-200';  // Brown/orange for £10
     case '£5':
@@ -154,8 +156,14 @@ export default function Preferences({ onClose }: PreferencesProps) {
                   : 'bg-white hover:bg-gray-50'
               }`}
             >
-              <div className="text-lg font-bold mb-2">{currency.label}</div>
-              <div className="text-sm">
+              <div className={`text-lg font-bold mb-2 ${
+                isCurrencyDisabled(currency) ? 'text-red-500' : ''
+              }`}>
+                {currency.label}
+              </div>
+              <div className={`text-sm ${
+                isCurrencyDisabled(currency) ? 'text-red-500' : 'text-gray-600'
+              }`}>
                 {isCurrencyDisabled(currency) ? 'Disabled' : 'Available'}
               </div>
             </button>
@@ -173,12 +181,18 @@ export default function Preferences({ onClose }: PreferencesProps) {
               onClick={() => toggleCurrency(currency)}
               className={`p-4 rounded-lg transition-all duration-200 ${
                 isCurrencyDisabled(currency)
-                  ? 'bg-gray-200 text-gray-500'
+                  ? 'bg-gray-200'
                   : 'bg-white hover:bg-gray-50'
               }`}
             >
-              <div className="text-lg font-bold mb-2">{currency.label}</div>
-              <div className="text-sm">
+              <div className={`text-lg font-bold mb-2 ${
+                isCurrencyDisabled(currency) ? 'text-red-500' : ''
+              }`}>
+                {currency.label}
+              </div>
+              <div className={`text-sm ${
+                isCurrencyDisabled(currency) ? 'text-red-500' : 'text-gray-600'
+              }`}>
                 {isCurrencyDisabled(currency) ? 'Disabled' : 'Available'}
               </div>
             </button>
