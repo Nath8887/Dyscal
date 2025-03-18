@@ -1,21 +1,20 @@
 'use client';
 
+import React from 'react';
 import { useState, useEffect } from 'react';
-import { Currency, Transaction, Preferences as PreferencesType } from '../types/types';
+import { Currency, Preferences as PreferencesType } from '../types/types';
 
 const CURRENCY_DATA: Currency[] = [
-  { value: 50, type: 'note', label: '£50', count: 0 },
-  { value: 20, type: 'note', label: '£20', count: 0 },
-  { value: 10, type: 'note', label: '£10', count: 0 },
-  { value: 5, type: 'note', label: '£5', count: 0 },
-  { value: 2, type: 'coin', label: '£2', count: 0 },
-  { value: 1, type: 'coin', label: '£1', count: 0 },
-  { value: 0.5, type: 'coin', label: '50p', count: 0 },
-  { value: 0.2, type: 'coin', label: '20p', count: 0 },
-  { value: 0.1, type: 'coin', label: '10p', count: 0 },
-  { value: 0.05, type: 'coin', label: '5p', count: 0 },
-  { value: 0.02, type: 'coin', label: '2p', count: 0 },
-  { value: 0.01, type: 'coin', label: '1p', count: 0 },
+  { value: 10, type: "note", label: "£10", count: 0, imagePath: "/images/currency/10.png" },
+  { value: 5, type: "note", label: "£5", count: 0, imagePath: "/images/currency/5.png" },
+  { value: 2, type: "coin", label: "£2", count: 0, imagePath: "/images/currency/2.png" },
+  { value: 1, type: "coin", label: "£1", count: 0, imagePath: "/images/currency/1.png" },
+  { value: 0.5, type: "coin", label: "50p", count: 0, imagePath: "/images/currency/50p.png" },
+  { value: 0.2, type: "coin", label: "20p", count: 0, imagePath: "/images/currency/20p.png" },
+  { value: 0.1, type: "coin", label: "10p", count: 0, imagePath: "/images/currency/10p.png" },
+  { value: 0.05, type: "coin", label: "5p", count: 0, imagePath: "/images/currency/5p.png" },
+  { value: 0.02, type: "coin", label: "2p", count: 0, imagePath: "/images/currency/2p.png" },
+  { value: 0.01, type: "coin", label: "1p", count: 0, imagePath: "/images/currency/1p.png" }
 ];
 
 interface PreferencesProps {
