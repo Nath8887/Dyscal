@@ -72,7 +72,6 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
     disabledCurrency: [],
     pastInteractions: []
   });
-  const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [showHistory, setShowHistory] = useState(false);
 
   useEffect(() => {
@@ -82,19 +81,6 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
       setPreferences(JSON.parse(savedPreferences));
     }
   }, []);
-
-  // Load history from localStorage on mount
-  useEffect(() => {
-    const savedHistory = localStorage.getItem('calculatorHistory');
-    if (savedHistory) {
-      setHistory(JSON.parse(savedHistory));
-    }
-  }, []);
-
-  // Save history to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem('calculatorHistory', JSON.stringify(history));
-  }, [history]);
 
   const calculateChange = (amount: number) => {
     // Filter out disabled currencies and sort by value
@@ -152,11 +138,12 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
       return;
     }
 
-    // Create new transaction
+    // Create new transaction with breakdown
     const transaction = {
       amountOnTill: parseFloat(amountOnTill),
       moneyHandedByCustomer,
       changeDue,
+      breakdown: changeBreakdown,
       timestamp: new Date().toISOString()
     };
 
@@ -171,17 +158,16 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
     setPreferences(newPreferences);
 
     // Call the onComplete callback
-    onComplete(transaction);
+    onComplete({
+      amountOnTill: parseFloat(amountOnTill),
+      moneyHandedByCustomer,
+      changeDue
+    });
     
     // Reset calculator
     setAmountOnTill('');
     setChangeDue(0);
     setChangeBreakdown([]);
-  };
-
-  const clearHistory = () => {
-    setHistory([]);
-    localStorage.removeItem('calculatorHistory');
   };
 
   return (
@@ -215,47 +201,10 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
         </div>
       </div>
       
-      {showHistory && history.length > 0 && (
+      {showHistory && preferences.pastInteractions.length > 0 && (
         <div className="mb-6 bg-white p-4 rounded-lg shadow">
           <div className="flex justify-between items-center mb-2">
             <h3 className="text-lg font-bold">Recent Calculations</h3>
-            <button
-              onClick={clearHistory}
-              className="text-sm text-red-500 hover:text-red-700"
-            >
-              Clear History
-            </button>
-          </div>
-          <div className="space-y-3 max-h-60 overflow-y-auto">
-            {history.map((entry, index) => (
-              <div key={index} className="p-3 bg-gray-50 rounded border border-gray-200">
-                <div className="flex justify-between text-sm text-gray-600">
-                  <span>Amount: £{entry.amountOnTill}</span>
-                  <span>Change: £{entry.changeDue.toFixed(2)}</span>
-                </div>
-                <div className="mt-1 text-xs text-gray-500">
-                  {entry.timestamp}
-                </div>
-                <div className="mt-2 flex flex-wrap gap-1">
-                  {entry.breakdown.map((currency, idx) => (
-                    <span
-                      key={idx}
-                      className={`px-2 py-1 rounded text-xs ${getCurrencyColor(currency)}`}
-                    >
-                      {currency.label} × {currency.count}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {preferences.pastInteractions.length > 0 && (
-        <div className="mb-6 bg-white p-4 rounded-lg shadow">
-          <div className="flex justify-between items-center mb-2">
-            <h3 className="text-lg font-bold">Past Interactions</h3>
             <button
               onClick={() => {
                 const newPreferences = {
@@ -283,6 +232,18 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
                 <div className="mt-2 text-sm text-gray-600">
                   Money handed: £{transaction.moneyHandedByCustomer.toFixed(2)}
                 </div>
+                {transaction.breakdown && (
+                  <div className="mt-2 flex flex-wrap gap-1">
+                    {transaction.breakdown.map((currency, idx) => (
+                      <span
+                        key={idx}
+                        className={`px-2 py-1 rounded text-xs ${getCurrencyColor(currency)}`}
+                      >
+                        {currency.label} × {currency.count}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>

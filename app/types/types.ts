@@ -7,10 +7,11 @@ export interface Currency {
 }
 
 export interface Transaction {
-  timestamp: string;
   amountOnTill: number;
   moneyHandedByCustomer: number;
   changeDue: number;
+  breakdown?: Currency[];
+  timestamp: string;
 }
 
 export interface Preferences {
