@@ -307,40 +307,27 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
           </div>
         </div>
 
+        {/* Number Pad */}
         {showNumpad && (
-          <div className="bg-white p-4 rounded-xl shadow-lg">
-            <div className="grid grid-cols-3 gap-2">
-              {[7, 8, 9, 4, 5, 6, 1, 2, 3].map((num) => (
-                <button
-                  key={num}
-                  onClick={() => handleNumpadInput(num.toString())}
-                  className="p-4 text-2xl font-bold bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                >
-                  {num}
-                </button>
-              ))}
+          <div className="mt-4 grid grid-cols-3 gap-3 max-w-md mx-auto">
+            {[7, 8, 9, 4, 5, 6, 1, 2, 3, '.', 0, 'backspace'].map((num) => (
               <button
-                onClick={() => handleNumpadInput('0')}
-                className="p-4 text-2xl font-bold bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                key={num}
+                onClick={() => handleNumpadInput(num.toString())}
+                className={`
+                  p-6 text-2xl font-bold rounded-xl shadow-md transition-all duration-200
+                  ${num === 'backspace' 
+                    ? 'bg-red-500 hover:bg-red-600 text-white' 
+                    : 'bg-white hover:bg-gray-100 text-gray-800'}
+                  active:scale-95 hover:shadow-lg
+                `}
               >
-                0
+                {num === 'backspace' ? '←' : num}
               </button>
-              <button
-                onClick={() => handleNumpadInput('.')}
-                className="p-4 text-2xl font-bold bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                .
-              </button>
-              <button
-                onClick={() => handleNumpadInput('backspace')}
-                className="p-4 text-xl font-bold bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors flex items-center justify-center"
-              >
-                ←
-              </button>
-            </div>
+            ))}
             <button
               onClick={() => handleNumpadInput('clear')}
-              className="w-full mt-2 p-4 text-xl font-bold bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
+              className="col-span-3 p-6 text-2xl font-bold bg-red-500 text-white rounded-xl shadow-md hover:bg-red-600 transition-all duration-200 active:scale-95 hover:shadow-lg"
             >
               Clear
             </button>
