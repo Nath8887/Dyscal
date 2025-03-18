@@ -229,19 +229,6 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
             </svg>
             {showHistory ? 'Hide History' : 'Show History'}
           </button>
-          <button
-            onClick={() => {
-              setAmountOnTill('');
-              setChangeDue(0);
-              setChangeBreakdown([]);
-            }}
-            className="px-4 py-2 bg-[#7CB8B1] text-white rounded-full hover:bg-opacity-90 font-bold flex items-center gap-2"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
-            </svg>
-            Refresh
-          </button>
         </div>
       </div>
       
@@ -298,56 +285,42 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
         <div className="flex justify-between items-center bg-white p-6 rounded-xl shadow-lg">
           <span className="text-2xl font-bold">Amount shown on till:</span>
           <div className="flex items-center gap-3">
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-3xl font-bold text-gray-500">£</span>
-              <input
-                type="text"
-                inputMode="decimal"
-                pattern="[0-9]*\.?[0-9]*"
-                value={amountOnTill}
-                onChange={handleAmountChange}
-                placeholder="0.00"
-                className="border-2 border-gray-300 rounded-xl p-4 pl-10 w-56 text-right text-3xl font-bold focus:border-[#7CB8B1] focus:ring-2 focus:ring-[#7CB8B1] focus:outline-none"
-              />
-            </div>
+            <input
+              type="text"
+              inputMode="decimal"
+              pattern="[0-9]*\.?[0-9]*"
+              value={amountOnTill}
+              onChange={handleAmountChange}
+              placeholder="0.00"
+              className="border-2 border-gray-300 rounded-xl p-4 w-48 text-right text-3xl font-bold focus:border-[#7CB8B1] focus:ring-2 focus:ring-[#7CB8B1] focus:outline-none"
+            />
             <button
               onClick={() => setShowNumpad(!showNumpad)}
-              className="p-4 bg-[#7CB8B1] text-white rounded-lg hover:bg-opacity-90 transition-all duration-200"
+              className="p-4 bg-[#7CB8B1] text-white rounded-lg hover:bg-opacity-90"
             >
-              {showNumpad ? (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-              )}
+              {showNumpad ? '×' : '+'}
             </button>
           </div>
         </div>
 
-        {/* Number Pad */}
         {showNumpad && (
-          <div className="mt-4 grid grid-cols-3 gap-3 max-w-md mx-auto">
+          <div className="grid grid-cols-3 gap-2 bg-white p-4 rounded-xl shadow-lg">
             {[7, 8, 9, 4, 5, 6, 1, 2, 3, '.', 0, 'backspace'].map((num) => (
               <button
                 key={num}
                 onClick={() => handleNumpadInput(num.toString())}
-                className={`
-                  p-6 text-2xl font-bold rounded-xl shadow-md transition-all duration-200
-                  ${num === 'backspace' 
-                    ? 'bg-red-500 hover:bg-red-600 text-white' 
-                    : 'bg-white hover:bg-gray-100 text-gray-800'}
-                  active:scale-95 hover:shadow-lg
-                `}
+                className={`p-4 text-2xl font-bold rounded-lg ${
+                  num === 'backspace'
+                    ? 'bg-red-500 hover:bg-red-600 text-white'
+                    : 'bg-gray-100 hover:bg-gray-200'
+                }`}
               >
                 {num === 'backspace' ? '←' : num}
               </button>
             ))}
             <button
               onClick={() => handleNumpadInput('clear')}
-              className="col-span-3 p-6 text-2xl font-bold bg-red-500 text-white rounded-xl shadow-md hover:bg-red-600 transition-all duration-200 active:scale-95 hover:shadow-lg"
+              className="col-span-3 p-4 text-xl font-bold bg-red-500 text-white rounded-lg hover:bg-red-600"
             >
               Clear
             </button>
@@ -378,14 +351,47 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
                   {changeBreakdown
                     .filter(c => c.type === 'note')
                     .map((currency, index) => (
-                      <motion.div
+                      <div
                         key={currency.label}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                        className={`p-2 rounded-lg ${getCurrencyColor(currency)} flex flex-col items-center`}
+                        className={`p-4 rounded-lg ${getCurrencyColor(currency)} flex flex-col items-center`}
                       >
-                        <div className="relative w-full aspect-[2/1] mb-2">
-                          <picture>
-                            <source
-                              srcSet={`
+                        <div className="text-lg font-bold">{currency.label}</div>
+                        <div className="text-sm font-semibold">Quantity: {currency.count}</div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Coins Section */}
+            {changeBreakdown.some(c => c.type === 'coin') && (
+              <div>
+                <h4 className="text-md font-semibold mb-2">Coins:</h4>
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                  {changeBreakdown
+                    .filter(c => c.type === 'coin')
+                    .map((currency, index) => (
+                      <div
+                        key={currency.label}
+                        className={`p-4 rounded-lg ${getCurrencyColor(currency)} flex flex-col items-center`}
+                      >
+                        <div className="text-lg font-bold">{currency.label}</div>
+                        <div className="text-sm font-semibold">Quantity: {currency.count}</div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        <button
+          onClick={handleComplete}
+          className="w-full mt-6 px-6 py-4 bg-[#4C9B8F] text-white rounded-lg hover:bg-opacity-90 font-bold text-lg shadow-md transition-all duration-200 hover:shadow-lg hover:transform hover:scale-[1.02] active:scale-[0.98]"
+        >
+          Done
+        </button>
+      </div>
+    </div>
+  );
+}
