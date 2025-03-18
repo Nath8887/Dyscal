@@ -18,6 +18,14 @@ const CURRENCY_DATA: Currency[] = [
   { value: 0.01, type: "coin", label: "1p", count: 0, imagePath: "/images/currency/1p.png" }
 ];
 
+// Haptic feedback function
+const triggerHaptic = () => {
+  if (typeof window !== 'undefined' && window.navigator.vibrate) {
+    // Short vibration for 50ms
+    window.navigator.vibrate(50);
+  }
+};
+
 interface PreferencesProps {
   onClose: () => void;
 }
@@ -42,6 +50,9 @@ export default function Preferences({ onClose }: PreferencesProps) {
   }, [preferences]);
 
   const toggleCurrency = (currency: Currency) => {
+    // Trigger haptic feedback
+    triggerHaptic();
+    
     const isDisabled = preferences.disabledCurrency.some((c) => c.label === currency.label);
     
     let newDisabledCurrency;
@@ -68,6 +79,8 @@ export default function Preferences({ onClose }: PreferencesProps) {
   };
 
   const clearCache = () => {
+    // Trigger haptic feedback for clear cache too
+    triggerHaptic();
     setPreferences({
       ...preferences,
       pastInteractions: [],
