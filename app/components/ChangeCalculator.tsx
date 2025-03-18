@@ -152,21 +152,26 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
       return;
     }
 
-    // Add current calculation to history
-    const newEntry: HistoryEntry = {
-      amountOnTill: amountOnTill,
-      changeDue: changeDue,
-      breakdown: changeBreakdown,
-      timestamp: new Date().toLocaleString()
-    };
-    setHistory(prev => [newEntry, ...prev].slice(0, 10)); // Keep last 10 entries
-
-    // Call the onComplete callback
-    onComplete({
+    // Create new transaction
+    const transaction = {
       amountOnTill: parseFloat(amountOnTill),
       moneyHandedByCustomer,
       changeDue,
-    });
+      timestamp: new Date().toISOString()
+    };
+
+    // Update preferences with new transaction
+    const newPreferences = {
+      ...preferences,
+      pastInteractions: [transaction, ...preferences.pastInteractions].slice(0, 10) // Keep last 10
+    };
+
+    // Save to localStorage
+    localStorage.setItem('dyscalc-preferences', JSON.stringify(newPreferences));
+    setPreferences(newPreferences);
+
+    // Call the onComplete callback
+    onComplete(transaction);
     
     // Reset calculator
     setAmountOnTill('');
@@ -240,6 +245,43 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
                       {currency.label} × {currency.count}
                     </span>
                   ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {preferences.pastInteractions.length > 0 && (
+        <div className="mb-6 bg-white p-4 rounded-lg shadow">
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="text-lg font-bold">Past Interactions</h3>
+            <button
+              onClick={() => {
+                const newPreferences = {
+                  ...preferences,
+                  pastInteractions: []
+                };
+                localStorage.setItem('dyscalc-preferences', JSON.stringify(newPreferences));
+                setPreferences(newPreferences);
+              }}
+              className="text-sm text-red-500 hover:text-red-700"
+            >
+              Clear History
+            </button>
+          </div>
+          <div className="space-y-3 max-h-60 overflow-y-auto">
+            {preferences.pastInteractions.map((transaction, index) => (
+              <div key={index} className="p-3 bg-gray-50 rounded border border-gray-200">
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>Amount: £{transaction.amountOnTill.toFixed(2)}</span>
+                  <span>Change: £{transaction.changeDue.toFixed(2)}</span>
+                </div>
+                <div className="mt-1 text-xs text-gray-500">
+                  {new Date(transaction.timestamp).toLocaleString()}
+                </div>
+                <div className="mt-2 text-sm text-gray-600">
+                  Money handed: £{transaction.moneyHandedByCustomer.toFixed(2)}
                 </div>
               </div>
             ))}
