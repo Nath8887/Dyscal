@@ -38,22 +38,6 @@ export default function Home() {
     moneyHandedByCustomer: number;
     changeDue: number;
   }) => {
-    // Save to preferences
-    const savedPreferences = localStorage.getItem('dyscalc-preferences');
-    const preferences = savedPreferences ? JSON.parse(savedPreferences) : { pastInteractions: [] };
-    
-    const newTransaction: Transaction = {
-      ...transaction,
-      timestamp: new Date().toISOString(),
-    };
-
-    preferences.pastInteractions = [
-      ...preferences.pastInteractions,
-      newTransaction,
-    ].slice(-5);
-
-    localStorage.setItem('dyscalc-preferences', JSON.stringify(preferences));
-    
     // Reset to initial state
     setCurrentStep('counter');
     setMoneyHandedByCustomer(0);
