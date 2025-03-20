@@ -218,18 +218,16 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
     <div className="p-4 bg-[#F9F9F2] rounded-lg shadow-lg max-w-2xl mx-auto">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-3xl font-bold text-center font-heiti">Change Calculator</h2>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setShowHistory(!showHistory)}
-            className="px-4 py-2 bg-[#7CB8B1] text-white rounded-full hover:bg-opacity-90 font-bold flex items-center gap-2"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-              <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
-            </svg>
-            {showHistory ? 'Hide History' : 'Show History'}
-          </button>
-        </div>
+        <button
+          onClick={() => setShowHistory(!showHistory)}
+          className="px-4 py-2 bg-[#7CB8B1] text-white rounded-full hover:bg-opacity-90 font-bold flex items-center gap-2"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+            <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+          </svg>
+          {showHistory ? 'Hide History' : 'Show History'}
+        </button>
       </div>
       
       {showHistory && preferences.pastInteractions.length > 0 && (
@@ -285,18 +283,21 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
         <div className="flex justify-between items-center bg-white p-6 rounded-xl shadow-lg">
           <span className="text-2xl font-bold">Amount shown on till:</span>
           <div className="flex items-center gap-3">
-            <input
-              type="text"
-              inputMode="decimal"
-              pattern="[0-9]*\.?[0-9]*"
-              value={amountOnTill}
-              onChange={handleAmountChange}
-              placeholder="0.00"
-              className="border-2 border-gray-300 rounded-xl p-4 w-48 text-right text-3xl font-bold focus:border-[#7CB8B1] focus:ring-2 focus:ring-[#7CB8B1] focus:outline-none"
-            />
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-3xl font-bold text-gray-500">£</span>
+              <input
+                type="text"
+                inputMode="decimal"
+                pattern="[0-9]*\.?[0-9]*"
+                value={amountOnTill}
+                onChange={handleAmountChange}
+                placeholder="0.00"
+                className="border-2 border-gray-300 rounded-xl p-4 pl-10 w-56 text-right text-3xl font-bold focus:border-[#7CB8B1] focus:ring-2 focus:ring-[#7CB8B1] focus:outline-none"
+              />
+            </div>
             <button
               onClick={() => setShowNumpad(!showNumpad)}
-              className="p-4 bg-[#7CB8B1] text-white rounded-lg hover:bg-opacity-90"
+              className="p-4 bg-[#7CB8B1] text-white rounded-lg hover:bg-opacity-90 transition-all duration-200"
             >
               {showNumpad ? '×' : '+'}
             </button>
@@ -304,12 +305,12 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
         </div>
 
         {showNumpad && (
-          <div className="grid grid-cols-3 gap-2 bg-white p-4 rounded-xl shadow-lg">
+          <div className="grid grid-cols-3 gap-3 bg-white p-4 rounded-xl shadow-lg">
             {[7, 8, 9, 4, 5, 6, 1, 2, 3, '.', 0, 'backspace'].map((num) => (
               <button
                 key={num}
                 onClick={() => handleNumpadInput(num.toString())}
-                className={`p-4 text-2xl font-bold rounded-lg ${
+                className={`p-6 text-2xl font-bold rounded-xl shadow-md transition-all duration-200 ${
                   num === 'backspace'
                     ? 'bg-red-500 hover:bg-red-600 text-white'
                     : 'bg-gray-100 hover:bg-gray-200'
@@ -320,7 +321,7 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
             ))}
             <button
               onClick={() => handleNumpadInput('clear')}
-              className="col-span-3 p-4 text-xl font-bold bg-red-500 text-white rounded-lg hover:bg-red-600"
+              className="col-span-3 p-6 text-2xl font-bold bg-red-500 text-white rounded-xl shadow-md hover:bg-red-600 transition-all duration-200"
             >
               Clear
             </button>
