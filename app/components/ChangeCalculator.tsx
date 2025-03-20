@@ -388,9 +388,9 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
 
         <button
           onClick={handleComplete}
-          className="w-full mt-6 px-6 py-4 bg-[#4C9B8F] text-white rounded-lg hover:bg-opacity-90 font-bold text-lg shadow-md transition-all duration-200 hover:shadow-lg hover:transform hover:scale-[1.02] active:scale-[0.98]"
+          className="w-full py-4 px-6 bg-blue-600 text-white rounded-lg text-xl font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl"
         >
-          Done
+          Continue to Change
         </button>
       </div>
     </div>
