@@ -85,7 +85,7 @@ export default function MoneyCounter({ onComplete }: { onComplete: (total: numbe
   };
 
   return (
-    <div className="p-4 bg-[#F9F9F2] rounded-lg shadow-lg max-w-2xl mx-auto">
+    <div className="p-4 bg-[#FFFBDC] rounded-lg shadow-lg max-w-2xl mx-auto">
       <h2 className="text-2xl font-bold mb-4 text-center font-heiti">Money Counter</h2>
       
       {/* Notes Section */}

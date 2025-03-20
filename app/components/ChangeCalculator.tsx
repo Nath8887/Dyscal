@@ -206,7 +206,7 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
   };
 
   return (
-    <div className="p-4 bg-[#F9F9F2] rounded-lg shadow-lg max-w-2xl mx-auto">
+    <div className="p-4 bg-[#FFFBDC] rounded-lg shadow-lg max-w-2xl mx-auto">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-3xl font-bold text-center font-heiti">Change Calculator</h2>
         <button

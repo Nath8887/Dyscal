@@ -131,7 +131,7 @@ export default function Preferences({ onClose }: PreferencesProps) {
   const coins = CURRENCY_DATA.filter(c => c.type === 'coin');
 
   return (
-    <div className="p-4 bg-[#F9F9F2] rounded-lg shadow-lg max-w-2xl mx-auto">
+    <div className="p-4 bg-[#FFFBDC] rounded-lg shadow-lg max-w-2xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-center">Currency Preferences</h2>
         <button
