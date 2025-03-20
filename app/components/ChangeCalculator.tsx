@@ -1,21 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import Image from 'next/image';
 import { Currency, Preferences } from '../types/types';
 import { toast } from 'react-hot-toast';
 
 interface ChangeCalculatorProps {
   moneyHandedByCustomer: number;
   onComplete: (transaction: { amountOnTill: number; moneyHandedByCustomer: number; changeDue: number }) => void;
-}
-
-interface HistoryEntry {
-  amountOnTill: string;
-  changeDue: number;
-  breakdown: Currency[];
-  timestamp: string;
 }
 
 const CURRENCY_DATA: Currency[] = [
@@ -249,8 +240,8 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
             </button>
           </div>
           <div className="space-y-3 max-h-60 overflow-y-auto">
-            {preferences.pastInteractions.map((transaction, index) => (
-              <div key={index} className="p-3 bg-gray-50 rounded border border-gray-200">
+            {preferences.pastInteractions.map((transaction, _idx) => (
+              <div key={_idx} className="p-3 bg-gray-50 rounded border border-gray-200">
                 <div className="flex justify-between text-sm text-gray-600">
                   <span>Amount: £{transaction.amountOnTill.toFixed(2)}</span>
                   <span>Change: £{transaction.changeDue.toFixed(2)}</span>
@@ -263,9 +254,9 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
                 </div>
                 {transaction.breakdown && (
                   <div className="mt-2 flex flex-wrap gap-1">
-                    {transaction.breakdown.map((currency, idx) => (
+                    {transaction.breakdown.map((currency, _i) => (
                       <span
-                        key={idx}
+                        key={_i}
                         className={`px-2 py-1 rounded text-xs ${getCurrencyColor(currency)}`}
                       >
                         {currency.label} × {currency.count}
@@ -308,7 +299,7 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
           <div className="grid grid-cols-3 gap-3 bg-white p-4 rounded-xl shadow-lg">
             {[7, 8, 9, 4, 5, 6, 1, 2, 3, '.', 0, 'backspace'].map((num) => (
               <button
-                key={num}
+                key={num.toString()}
                 onClick={() => handleNumpadInput(num.toString())}
                 className={`p-6 text-2xl font-bold rounded-xl shadow-md transition-all duration-200 ${
                   num === 'backspace'
@@ -351,7 +342,7 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {changeBreakdown
                     .filter(c => c.type === 'note')
-                    .map((currency, index) => (
+                    .map((currency, _idx) => (
                       <div
                         key={currency.label}
                         className={`p-4 rounded-lg ${getCurrencyColor(currency)} flex flex-col items-center`}
@@ -371,7 +362,7 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
                   {changeBreakdown
                     .filter(c => c.type === 'coin')
-                    .map((currency, index) => (
+                    .map((currency, _idx) => (
                       <div
                         key={currency.label}
                         className={`p-4 rounded-lg ${getCurrencyColor(currency)} flex flex-col items-center`}
@@ -395,4 +386,4 @@ export default function ChangeCalculator({ moneyHandedByCustomer, onComplete }: 
       </div>
     </div>
   );
-}
+} 

@@ -22,8 +22,7 @@ const CURRENCY_DATA: Currency[] = [
 
 // Haptic feedback function
 const triggerHaptic = () => {
-  if (typeof window !== 'undefined' && window.navigator.vibrate) {
-    // Short vibration for 50ms
+  if (window.navigator && window.navigator.vibrate) {
     window.navigator.vibrate(50);
   }
 };
@@ -83,42 +82,45 @@ export default function Preferences({ onClose }: PreferencesProps) {
     localStorage.setItem('dyscalc-preferences', JSON.stringify(preferences));
   }, [preferences]);
 
-  const toggleCurrency = (currency: Currency) => {
+  const handleToggle = (toggled: Currency) => {
     // Trigger haptic feedback
     triggerHaptic();
     
-    const isDisabled = preferences.disabledCurrency.some((c) => c.label === currency.label);
-    
-    let newDisabledCurrency;
-    if (isDisabled) {
-      // Enable the currency by removing it from disabled list
-      newDisabledCurrency = preferences.disabledCurrency.filter((c) => c.label !== currency.label);
+    const disabledCopy = [...preferences.disabledCurrency];
+    const index = disabledCopy.findIndex(c => c.label === toggled.label);
+
+    if (index > -1) {
+      // Remove from disabled list
+      disabledCopy.splice(index, 1);
     } else {
-      // Disable the currency by adding it to disabled list
-      newDisabledCurrency = [...preferences.disabledCurrency, currency];
+      // Add to disabled list
+      disabledCopy.push(toggled);
     }
 
-    // Update preferences
     const newPreferences = {
       ...preferences,
-      disabledCurrency: newDisabledCurrency,
+      disabledCurrency: disabledCopy
     };
 
-    // Save to state and localStorage
+    // Update state and localStorage
     setPreferences(newPreferences);
     localStorage.setItem('dyscalc-preferences', JSON.stringify(newPreferences));
 
     // Show confirmation toast
-    toast.success(`${currency.label} ${isDisabled ? 'enabled' : 'disabled'}`);
+    toast.success(`${toggled.label} ${index > -1 ? 'disabled' : 'enabled'}`);
   };
 
-  const clearCache = () => {
+  const handleClearHistory = () => {
     // Trigger haptic feedback for clear cache too
     triggerHaptic();
     setPreferences({
       ...preferences,
       pastInteractions: [],
     });
+    localStorage.setItem('dyscalc-preferences', JSON.stringify({
+      ...preferences,
+      pastInteractions: [],
+    }));
   };
 
   const isCurrencyDisabled = (currency: Currency) => {
@@ -131,10 +133,10 @@ export default function Preferences({ onClose }: PreferencesProps) {
   return (
     <div className="p-4 bg-[#F9F9F2] rounded-lg shadow-lg max-w-2xl mx-auto">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold font-heiti">Preferences</h2>
+        <h2 className="text-2xl font-bold text-center">Currency Preferences</h2>
         <button
-          onClick={() => window.history.back()}
-          className="px-4 py-2 bg-[#7CB8B1] text-white rounded-full hover:bg-opacity-90"
+          onClick={onClose}
+          className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors"
         >
           Close
         </button>
@@ -149,7 +151,7 @@ export default function Preferences({ onClose }: PreferencesProps) {
           {notes.map(currency => (
             <button
               key={currency.label}
-              onClick={() => toggleCurrency(currency)}
+              onClick={() => handleToggle(currency)}
               className={`p-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg ${
                 isCurrencyDisabled(currency)
                   ? 'bg-gray-200'
@@ -178,7 +180,7 @@ export default function Preferences({ onClose }: PreferencesProps) {
           {coins.map(currency => (
             <button
               key={currency.label}
-              onClick={() => toggleCurrency(currency)}
+              onClick={() => handleToggle(currency)}
               className={`p-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg ${
                 isCurrencyDisabled(currency)
                   ? 'bg-gray-200'
